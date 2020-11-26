@@ -47,5 +47,5 @@ complete_data <- arrange(complete_data, subject)
 complete_data_summary <- complete_data %>% group_by(subject, activity_description) %>% summarise(across(.fns = mean))
 
 ## 9. Save the above two final datasets as .txt files.
-write.table(x = complete_data, file = './combined_train_test_dataset.txt')
-write.table(x = complete_data_summary, file = './summary_combined_train_test_dataset.txt')
+write.table(x = complete_data, file = './combined_train_test_dataset.txt', row.names = FALSE)
+write.table(x = complete_data_summary, file = './summary_combined_train_test_dataset.txt', row.names = FALSE)
