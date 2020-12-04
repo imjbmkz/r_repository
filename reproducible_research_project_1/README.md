@@ -10,7 +10,7 @@ The study just focused on answering the following questions.
 
 These, of course, aren't just close-ended question. There are some plots and slight interpretations.
 
-The full report is found on the **HTML** file in this repository, named, **Summary_Report.html**
+The full report is found on the **HTML** file in this repository, named, **Summary_Report.md**
 
 ### How the code works?
 Apart from the images and report, this repository also contains the R script (`project1_solutions.R`) which will answer all of the questions above. This script has five functions. The first one is named,
