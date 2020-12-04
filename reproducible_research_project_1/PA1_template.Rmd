@@ -1,0 +1,152 @@
+## Reproducible Research Course Project 1
+Submitted by: **Josh Valdeleon**
+
+Date Committed: December 4, 2020
+
+
+### Abstract
+In this project, we will be working with the data on personal movements, at the very least, we'll work with the number of steps recorded with **5-minute** interval from **October** to **November 2012**. 
+
+The data is stored in a comma-separated-value (CSV) file which can be downloaded in this [link](https://github.com/imjbmkz/RepData_PeerAssessment1/blob/master/activity.zip). It consists of **17,568** observations and **3** variables. These variables are as shown.
+
+|Variable Name                  |Description                            |
+|-------------------------------|---------------------------------------|
+|`steps`                        |Number of steps taking in a 5-minute interval (missing values are coded as **NA**
+|`date`                         |The date on which the measurement was taken in YYYY-MM-DD format
+|`interval`                     |Identifier for the 5-minute interval in which measurement was taken
+
+The analysis will revolve around answering couple of questions and presenting some data visualizations which would help in understanding further the data.
+
+The only libraries used are **readr** to efficiently read large data, **dplyr** for data manipulation, and **ggplot2** for data visualization. These packages are all included in the **tidyverse** package.
+
+All of the codes are stored in the R script called `project1_solutions.R`. This script provides five functions which would help answering the questions presented. I have sourced this script and used these functions to answer the problems below. For more details, go to `README.md` is this sub-directory.
+
+
+```{r cache=TRUE, results='hide'}
+source('~/reproducible_research/project1_solutions.R')
+```
+
+
+### Loading and Pre-Processing the data
+Let's read the data and store it in variable `x`.
+
+```{r cache=TRUE, results='hide'}
+x <- get_data()
+```
+
+
+Let's quickly examine the data.
+
+```{r cache=TRUE}
+print(names(x)) # gives the column names
+print(dim(x)) # gives the number of observations and variables
+print(str(x)) # gives the 'structure' of the data
+```
+
+
+By the above functions, we've seen the data types of these columns, its size, and some `NA`s. We'll not touch these for now as it will be addressed during question number three.
+
+### Question 1: What is mean total number of steps taken per day?
+
+```{r cache=TRUE}
+q1 <- question_one(x)
+```
+
+
+The function above is still part of the script that I sourced. `q1` is a list with 4 named-attributes. Let's call the ggplot object from this variable. It's called `my_hist`.
+
+```{r cache=TRUE}
+q1$my_hist
+```
+
+
+The histogram shows us the distribution of the values in `steps` variable of our dataset. This is after removing all `NA`s from it. It looks close to a normal distribution which can be proved by the mean and median of this dataset. 
+
+```{r cache=TRUE}
+print(paste('The mean is', round(q1$my_mean, 2)))
+print(paste('The median is', q1$my_median))
+```
+
+
+The mean and median are so close to each other. The mean and median of a data that has a **normal distribution** are equal. Although ours aren't but they're too close. 
+
+
+## Question 2: What is the average daily activity pattern?
+
+```{r cache=TRUE}
+q2 <- question_two(x)
+```
+
+
+The time-series plot would helps us easily see which interval has the highest mean steps across all days. It's stored in the named item in `q2` called `my_line`.
+
+```{r cache=TRUE}
+q2$my_line
+```
+
+
+The peak of the line is on roughly **800th minute**. And to be more precise, we simple call the second element of `q2` list, that is, `my_max`.
+
+```{r cache=TRUE}
+q2$my_max
+```
+
+
+Our estimate is correct, and the exact interval where we've seen the highest mean steps across all intervals is on the **835<sup>th</sup>** interval.
+
+
+## Imputing missing values
+
+```{r cache=TRUE}
+q3 <- question_three(x)
+```
+
+
+Let's look at the rate of missing values per column of the original dataset.
+
+```{r cache=TRUE}
+q3$na_prop
+```
+
+
+The `steps` variable is the only column with missing values that is more than 13% of the data. To address this, I tried to do two approaches. One is to replace the `NA`s with the **mean** of this variable, and two is to replace the same with the **median**. 
+
+The function `question_three()` mutates the data with two additional columns with `NA` values replaced by mean and median. They are called `mean_filled` and `median_filled`. Let's look at the mean and median of these two columns.
+
+```{r cache=TRUE}
+print('mean_filled')
+print(str(q3$mean_filled))
+print('median_filled')
+print(str(q3$median_filled))
+```
+
+
+From above output, we can see that the mean and median will become the same if the `NA`s are replaced with the mean of the `steps` variable. On the other hand, the mean becomes smaller than the median if these `NA`s were replaced by the median. To visualize it, `q3` list has ggplot objects called `mean_filled_hist` and `median_filled_hist` which will display the histograms of `mean_filled` and `median_filled` variables.
+
+```{r cache=TRUE}
+gridExtra::grid.arrange(q3$mean_filled_hist, q3$median_filled_hist)
+```
+
+
+We can see that this histogram proves the calculated mean and median of `mean_filled` since it looks like (and numerically speaking, it is) a **normal distribution**. The `median_filled` variable looks like a **bimodal** one. In many statistical analyses, a normal distribution would be much easier to model than other distributions. So, in the next question, we'll replace the `NA`s with the mean steps.
+
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+```{r echo=TRUE}
+q4 <- question_four(x)
+```
+
+
+`question_four()` function replaces `NA`s in the `steps` variable, and adds a new column that categorizes the date if it is a weekday or a weekend. The data is then grouped by this category and by interval, and summarized by the mean steps.
+
+Let's visualize the trend of the mean steps per interval, and we'll group it by day category.
+
+```{r echo=TRUE}
+q4$my_line
+```
+
+
+From the above time-series plot, I would say that generally, the trend is similar. The person is much more active, that is, taking more steps roughly at **800<sup>th</sup>** minute. The difference between them is that the person is much more active during weekends since there are many intervals after 1000<sup>th</sup> were s/he exceeded 100 steps versus that of the weekdays where s/he only had one instance of reaching 100 steps. 
+
+This could mean that maybe the person during weekdays, which is obviously his/her workdays, might always be at his/her desk and just walks when needed (for lunch, going to different meeting rooms, goes to his/her officemates to have a little chit-chat, etc). While on the weekend, that his/her time to go on a trip or elsewhere to have fun.
