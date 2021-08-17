@@ -1,1 +1,1 @@
-Initializ
+This is the repository that contains the RMarkdown files, [Kaggle datasets](https://www.kaggle.com/c/titanic), and R scripts. The results here are different from what's in my Medium article due to some randomization (which is now static in the R script and RMarkdown files).
